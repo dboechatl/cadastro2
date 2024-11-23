@@ -1,37 +1,65 @@
 version: '3.8'
 
 services:
-  db:
-    image: mysql:8.0
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-      MYSQL_DATABASE: bdusuario
-      MYSQL_USER: mysql_user
-      MYSQL_PASSWORD: mysql_password
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
     ports:
-      - '3306:3306'
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    restart: always
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_DATABASE: veiculos
     volumes:
       - mysql_data:/var/lib/mysql
+    restart: always
 
-  app:
+  spring_app:
     build:
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      - db
+      context: ./springboot-app
+    container_name: spring_app
     ports:
-      - '3000:8081'
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+      - "8081:8081"
     environment:
-      PMA_HOST: db  # O nome do serviço do MySQL (db)
-      PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: ''  # Senha do root, se necessário
-    ports:
-      - '8082:80'
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/veiculos
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ""
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
     depends_on:
-      - db
+      - mysql
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: always
+
+  sonarqube:
+    image: sonarqube:community
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    environment:
+      SONAR_JDBC_URL: jdbc:mysql://mysql:3306/veiculos
+      SONAR_JDBC_USERNAME: root
+      SONAR_JDBC_PASSWORD: ""
+    depends_on:
+      - mysql
+    restart: always
 
 volumes:
+  jenkins_home:
   mysql_data:
