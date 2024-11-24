@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Verificar Repositório') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/cadastro3']], useRemoteConfigs:[[url: 'https://github.com/dboechatl/cadastro.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], useRemoteConfigs:[[url: 'https://github.com/dboechatl/cadastro2.git']]])
             }
         }
         //stage('Instalar Dependências') {
@@ -19,7 +19,7 @@ pipeline {
         stage('Construir Imagem Docker') {
             steps {
                 script {
-                    def appName = 'cadastro3'
+                    def appName = 'cadastro-app'
                     def imageTag = "${appName}:${env.BUILD_ID}"
 
                     // Construir a imagem Docker
