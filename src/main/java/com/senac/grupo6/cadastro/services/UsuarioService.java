@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.senac.grupo6.cadastro.configurations.UsuarioProducer;
 import com.senac.grupo6.cadastro.entities.Usuario;
 import com.senac.grupo6.cadastro.repositories.UsuarioRepository;
 
@@ -11,9 +12,11 @@ import com.senac.grupo6.cadastro.repositories.UsuarioRepository;
 public class UsuarioService {
 
     private UsuarioRepository usuarioRepository;
+    private final UsuarioProducer usuarioProducer;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioProducer usuarioProducer) {
         this.usuarioRepository = usuarioRepository;
+        this.usuarioProducer = usuarioProducer;
     }
 
     // Lista apenas usuários ativos (status = 1)
@@ -27,6 +30,11 @@ public class UsuarioService {
 
     public Usuario adicionarUsuario(Usuario usuario) {
         usuario.setStatus(1); // Define status como ativo ao adicionar
+        
+        // Enviar uma mensagem de aviso para a fila RabbitMQ
+        String mensagem = "Novo usuário criado: " + usuario.getNome() + " " + usuario.getSobrenome();
+        usuarioProducer.enviarMensagemNovoUsuario(mensagem);
+        
         return usuarioRepository.save(usuario);
     }
 	
