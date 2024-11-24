@@ -44,7 +44,12 @@ public class Usuario implements Serializable {
 
     @Column(name = "usuario_status", nullable = false)
     private int status;
-    
+
+
+    // Construtor sem argumentos (necessário para o Hibernate)
+    public Usuario() {
+    }
+	
     public Usuario(String nome, String sobrenome, String cpf, String email, String senha, String endereco, String telefone, int status) {
         this.nome = nome;
         this.sobrenome = sobrenome;
