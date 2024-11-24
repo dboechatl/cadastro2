@@ -1,15 +1,21 @@
 version: '3.8'
 
 services:
-  jenkins:
-    image: jenkins/jenkins:lts
-    container_name: jenkins
+  app:
+    image: cadastro-app:latest  # Nome da imagem do aplicativo Spring Boot
+    container_name: cadastro-app
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "8080:8080"
-      - "50000:50000"
-    volumes:
-      - jenkins_home:/var/jenkins_home
-    restart: always
+      - "3000:3000"  # Mapeamento direto da porta 3000
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bdusuario  # Nome do serviço MySQL
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ""
+    depends_on:
+      - mysql  # Aguarda o banco de dados estar disponível antes de iniciar o app
+    restart: always  # Reinicia automaticamente o contêiner se ele falhar
 
   mysql:
     image: mysql:8.0
@@ -17,49 +23,11 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: ""
-      MYSQL_DATABASE: veiculos
+      MYSQL_ROOT_PASSWORD: ""  # Senha vazia para o usuário root
+      MYSQL_DATABASE: bdusuario  # Nome do banco de dados
     volumes:
-      - mysql_data:/var/lib/mysql
-    restart: always
-
-  spring_app:
-    build:
-      context: ./springboot-app
-    container_name: spring_app
-    ports:
-      - "8081:8081"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/veiculos
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: ""
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-    depends_on:
-      - mysql
-      - rabbitmq
-
-  rabbitmq:
-    image: rabbitmq:management
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    restart: always
-
-  sonarqube:
-    image: sonarqube:community
-    container_name: sonarqube
-    ports:
-      - "9000:9000"
-    environment:
-      SONAR_JDBC_URL: jdbc:mysql://mysql:3306/veiculos
-      SONAR_JDBC_USERNAME: root
-      SONAR_JDBC_PASSWORD: ""
-    depends_on:
-      - mysql
-    restart: always
+      - mysql_data:/var/lib/mysql  # Persistência de dados
+    restart: always  # Reinicia automaticamente o contêiner se ele falhar
 
 volumes:
-  jenkins_home:
-  mysql_data:
+  mysql_data:  # Volume para o banco de dados
