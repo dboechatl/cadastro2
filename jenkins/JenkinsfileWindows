@@ -13,8 +13,7 @@ pipeline {
                     env.PATH = "/usr/bin:$PATH"
                 }
                 sh 'mvn -v'
-		sh 'mvn clean install'
-                //sh 'npm run build'
+		sh 'mvn clean'
             }
         }
         
