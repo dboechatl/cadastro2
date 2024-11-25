@@ -7,13 +7,13 @@ pipeline {
             }
         }
         
-        //stage('Instalar Dependências') {
-        //    steps {
-        //        sh 'node -v'
-        //         sh 'npm install'
-        //         sh 'npm run build'
-        //     }
-        // }
+        stage('Instalar Dependências') {
+            steps {
+                sh 'node -v'
+                 sh 'npm install'
+                 sh 'npm run build'
+            }
+        }
         
         stage('Análise SonarQube') {
             steps {
