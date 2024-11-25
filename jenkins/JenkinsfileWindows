@@ -6,18 +6,29 @@ pipeline {
                 checkout([$class: 'GitSCM', branches: [[name: '*/teste2']], useRemoteConfigs: [[url: 'https://github.com/dboechatl/cadastro2.git']]])
             }
         }
+
+	stage('Instalar Dependências') {
+    		steps {
+        		script {
+            		// Garanta que o Maven esteja disponível no PATH
+            		env.PATH = "/usr/share/maven/bin:$PATH"
+        		}
+        		// Rodar o Maven para baixar dependências e compilar o código
+        		sh 'mvn clean install'
+    		}
+	}
         
-        stage('Instalar Dependências') {
-            steps {
-                script {
-                    env.PATH = "/usr/bin:$PATH"
-                }
-                sh 'node -v'
-                sh 'npm -v'
-                sh 'npm install'
-                sh 'npm run build'
-            }
-        }
+        //stage('Instalar Dependências') {
+        //    steps {
+        //        script {
+        //            env.PATH = "/usr/bin:$PATH"
+        //        }
+        //        sh 'node -v'
+        //        sh 'npm -v'
+        //        sh 'npm install'
+        //        sh 'npm run build'
+        //    }
+        //}
         
         stage('Análise SonarQube') {
             steps {
