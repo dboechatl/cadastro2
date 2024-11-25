@@ -2,9 +2,10 @@ package com.senac.grupo6.cadastro.services;
 
 import java.util.List;
 
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.senac.grupo6.cadastro.configurations.UsuarioProducer;
 import com.senac.grupo6.cadastro.entities.Usuario;
 import com.senac.grupo6.cadastro.repositories.UsuarioRepository;
 
@@ -12,11 +13,12 @@ import com.senac.grupo6.cadastro.repositories.UsuarioRepository;
 public class UsuarioService {
 
     private UsuarioRepository usuarioRepository;
-    private final UsuarioProducer usuarioProducer;
+    
+    @Autowired
+	private RabbitTemplate rabbitTemplate;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioProducer usuarioProducer) {
+    public UsuarioService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
-        this.usuarioProducer = usuarioProducer;
     }
 
     // Lista apenas usuários ativos (status = 1)
@@ -32,8 +34,7 @@ public class UsuarioService {
         usuario.setStatus(1); // Define status como ativo ao adicionar
         
         // Enviar uma mensagem de aviso para a fila RabbitMQ
-        String mensagem = "Novo usuário criado: " + usuario.getNome() + " " + usuario.getSobrenome();
-        usuarioProducer.enviarMensagemNovoUsuario(mensagem);
+        rabbitTemplate.convertAndSend("fila-ecommerce", usuario);
         
         return usuarioRepository.save(usuario);
     }
@@ -64,6 +65,11 @@ public class UsuarioService {
 		} else {
 			return null;
 		}		
+	}
+	
+	@RabbitListener(queues = "fila-ecommerce")
+	private void subscribe(Usuario usuario) {
+	    System.out.println("Novo usuário criado: " + usuario.getNome() + " " + usuario.getSobrenome());
 	}
 	
 }
