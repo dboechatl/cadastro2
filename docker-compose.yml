@@ -16,20 +16,4 @@ services:
     depends_on:
       - mysql  # Aguarda o banco de dados estar disponível antes de iniciar o app
     restart: always  # Reinicia automaticamente o contêiner se ele falhar
-
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-      MYSQL_DATABASE: bdusuario
-      MYSQL_USER: mysql_user
-      MYSQL_PASSWORD: mysql_password
-    volumes:
-      - mysql_data:/var/lib/mysql  # Persistência de dados
-    restart: always  # Reinicia automaticamente o contêiner se ele falhar
-
-volumes:
-  mysql_data:  # Volume para o banco de dados
+    
