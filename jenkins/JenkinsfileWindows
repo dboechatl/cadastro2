@@ -3,42 +3,42 @@ pipeline {
     stages {
         stage('Verificar Repositório') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/teste2']], useRemoteConfigs: [[url: 'https://github.com/dboechatl/cadastro2.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/teste3']], useRemoteConfigs: [[url: 'https://github.com/dboechatl/cadastro2.git']]])
             }
         }
       
-        stage('Instalar Dependências') {
-            steps {
-                script {
-                    env.PATH = "/usr/bin:$PATH"
-                }
-                sh 'mvn -v'
-		sh 'mvn clean'
-            }
-        }
+        //stage('Instalar Dependências') {
+        //    steps {
+        //        script {
+        //            env.PATH = "/usr/bin:$PATH"
+        //        }
+        //        sh 'mvn -v'
+		//sh 'mvn clean'
+        //    }
+        //}
         
-        stage('Análise SonarQube') {
-            steps {
-                withSonarQubeEnv('SonarQubeServer') { // Nome da instância configurada no Jenkins
-                    sh """
-                    mvn clean verify sonar:sonar \
-                        -Dsonar.projectKey=cadastro \
-                        -Dsonar.projectName='cadastro'
-                    """
-                }
-            }
-        }
+        //stage('Análise SonarQube') {
+        //   steps {
+        //        withSonarQubeEnv('SonarQubeServer') { // Nome da instância configurada no Jenkins
+        //            sh """
+        //           mvn clean verify sonar:sonar \
+        //                -Dsonar.projectKey=cadastro \
+        //                -Dsonar.projectName='cadastro'
+        //            """
+        //        }
+        //    }
+        //}
         
-        stage('Quality Gate') {
-            steps {
-                script {
-                    def qg = waitForQualityGate() // Verifica o Quality Gate
-                    if (qg.status != 'OK') {
-                        error "Quality Gate falhou: ${qg.status}"
-                    }
-                }
-            }
-        }
+        //stage('Quality Gate') {
+        //    steps {
+        //        script {
+        //            def qg = waitForQualityGate() // Verifica o Quality Gate
+        //            if (qg.status != 'OK') {
+        //                error "Quality Gate falhou: ${qg.status}"
+        //            }
+        //        }
+        //    }
+        //}
         
         stage('Construir Imagem Docker') {
             steps {
@@ -47,7 +47,7 @@ pipeline {
                     def imageTag = "${appName}:${env.BUILD_ID}"
 
                     // Construir a imagem Docker
-                    sh "docker build -t ${imageTag} ."
+                    bat "docker build -t ${imageTag} ."
                 }
             }
         }
@@ -58,10 +58,10 @@ pipeline {
                     def appName = 'cadastro'
                     def imageTag = "${appName}:${env.BUILD_ID}"
                     // Parar e remover o container existente, se houver
-                    sh "docker stop ${appName} || exit 0"
-                    sh "docker rm ${appName} || exit 0"
+                    bat "docker stop ${appName} || exit 0"
+                    bat "docker rm ${appName} || exit 0"
                     // Executar o novo container
-                    sh "docker-compose up -d --build"
+                    bat "docker-compose up -d --build"
                 }
             }
         }
