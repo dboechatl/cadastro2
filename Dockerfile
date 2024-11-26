@@ -1,9 +1,3 @@
-#FROM openjdk:17-jdk-slim
-#ARG JAR_FILE=target/*.jar
-#COPY ${JAR_FILE} app.jar
-#ENTRYPOINT ["java", "-jar", "/app.jar"]
-#EXPOSE 8081
-
 # Etapa 1: Escolha a imagem base do Maven para compilar o código Java
 FROM maven:latest AS build
 
