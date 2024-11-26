@@ -7,15 +7,16 @@ pipeline {
             }
         }
       
-        //stage('Instalar Dependências') {
-        //    steps {
-        //        script {
-        //            env.PATH = "/usr/bin:$PATH"
-        //        }
-        //        sh 'mvn -v'
-		//sh 'mvn clean'
-        //    }
-        //}
+        stage('Instalar Dependências') {
+            steps {
+                script {
+                    // Atualiza o PATH se necessário
+                    env.PATH = "/usr/bin:$PATH"
+                    // Instalar as dependências Maven antes de compilar o projeto
+                    sh 'mvn clean install'  // Instala as dependências do Maven
+                }
+            }
+        }
         
         //stage('Análise SonarQube') {
         //   steps {
