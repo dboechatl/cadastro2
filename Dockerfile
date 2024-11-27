@@ -2,7 +2,7 @@
 FROM maven:latest AS build
 
 # Defina o diretório de trabalho para /app
-WORKDIR /cadastro
+WORKDIR /galeria
 
 # Copie o arquivo pom.xml e a pasta src para o contêiner
 COPY pom.xml .
@@ -15,13 +15,13 @@ RUN mvn clean package -DskipTests
 FROM openjdk:20-jdk-slim
 
 # Defina o diretório de trabalho para /app
-WORKDIR /cadastro
+WORKDIR /galeria
 
 # Copie o arquivo .jar gerado na etapa de build para a imagem final
-COPY --from=build /cadastro/target/*.jar cadastro.jar
+COPY --from=build /galeria/target/*.jar galeria.jar
 
 # Exponha a porta que a aplicação vai usar
 EXPOSE 3000
 
 # Comando para rodar a aplicação
-ENTRYPOINT ["java", "-jar", "cadastro.jar"]
+ENTRYPOINT ["java", "-jar", "galeria.jar"]

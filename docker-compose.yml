@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   app:
-    image: cadastro-app:latest  # Nome da imagem do aplicativo Spring Boot
-    container_name: cadastro-app
+    image: galeria-app:latest  # Nome da imagem do aplicativo Spring Boot
+    container_name: galeria-app
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,7 +11,7 @@ services:
       - "3000:3000"  # Porta exposta para acessar a aplicação
     environment:
       # Configurações para o MySQL
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bdusuario  # Nome do serviço MySQL no Docker Compose
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bdgaleria  # Nome do serviço MySQL no Docker Compose
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ""
       # Configurações para o RabbitMQ
@@ -31,7 +31,7 @@ services:
       - "3306:3306"  # Porta exposta para conexões externas
     environment:
         MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-        MYSQL_DATABASE: bdusuario
+        MYSQL_DATABASE: bdgaleria
         MYSQL_USER: mysql_user
         MYSQL_PASSWORD: mysql_password
     volumes:
