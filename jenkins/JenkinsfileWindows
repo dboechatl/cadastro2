@@ -28,17 +28,6 @@ pipeline {
             }
         }
         
-        //stage('Quality Gate') {
-        //    steps {
-        //        script {
-        //            def qg = waitForQualityGate() // Verifica o Quality Gate
-        //            if (qg.status != 'OK') {
-        //                error "Quality Gate falhou: ${qg.status}"
-        //            }
-        //        }
-        //    }
-        //}
-        
         stage('Construir Imagem Docker') {
             steps {
                 script {
